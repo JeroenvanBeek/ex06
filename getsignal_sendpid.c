@@ -18,7 +18,7 @@ volatile sig_atomic_t i = 0;
 void newHandler();//(int sig);
 
 int killed = 1;
-
+int fd;
 int main(void) 
 {
   struct sigaction act, oldact;
@@ -37,6 +37,16 @@ int main(void)
   sigaction(SIGINT, &act, &oldact);  // This cannot be SIGKILL or SIGSTOP
 
   printf("Waiting for signal %i.  My PID is %i.\n", mySigNr, getpid() );
+
+  
+  unsigned long int PID;
+  PID = getpid();
+  
+  mkfifo("PIDpipe", S_IFIFO|0666);          // Create FIFO; permissions: u/g/o r/w
+  fd = open("PIDpipe", O_WRONLY);           // Open FIFO write-only
+  write(fd, &PID, sizeof(PID));  // Write message to FIFO
+  close(fd);                             // Close FIFO
+  //unlink("F
 
   
   if(pthread_create(&ThreadID_A, NULL, ThreadFunction, (void*) &arg_P1)) 
