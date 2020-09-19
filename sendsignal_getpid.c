@@ -2,18 +2,18 @@
 #include <unistd.h>  // sleep()
 #include <signal.h>  // kill()
 #include <stdio.h>   // printf()
+#include <fcntl.h>          // open(), O_* constants
 
 
 int main(int argc, char *argv[])
 {
+  int fd;
   unsigned long int PID;
-  PID = strtoul(argv[1], NULL, 10);
-  
-  if(argc != 2) 
-  {
-    printf("Please give the PID of the receiving process as an argument.\n");
-    exit(1);
-  }
+
+  fd = open("PIDpipe", O_RDONLY);          // Open the FIFO read-only
+  read(fd, &PID, sizeof(PID));  // Read from the FIFO
+  close(fd);                            // Close the FIFO
+  printf("%li\n", PID);              // Print message to screen
 
   while(1) 
   {
